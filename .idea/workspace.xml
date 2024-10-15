@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b76576b4-0994-4526-82a4-c49571e707b2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/QuantumServerClientSDK/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/QuantumServerClientSDK/PingQueue.cs" afterDir="false" />
-    </list>
+    <list default="true" id="b76576b4-0994-4526-82a4-c49571e707b2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -62,7 +56,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1728996892201</updated>
-      <workItem from="1728996893391" duration="651000" />
+      <workItem from="1728996893391" duration="751000" />
     </task>
     <servers />
   </component>
