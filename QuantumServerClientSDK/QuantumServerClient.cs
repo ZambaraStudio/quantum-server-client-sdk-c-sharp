@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SocketIOClient;
+using SocketIOClient.Newtonsoft.Json;
 
 
 namespace QuantumServerClient
@@ -14,9 +17,17 @@ namespace QuantumServerClient
         public string ServerID;
         public string ServerSecret;
         public int MessageDelay;
+        public JsonSerializerSettings SerializationSettings;
     }
-    
-    public class GenericMessageEvent
+
+    public class QuantumEvent
+    {
+        public string type;
+        public uint id;
+        public GenericMessage message;
+    }
+     
+    public class GenericMessage
     {
         public string type { get; set; }
         public object data { get; set; }
@@ -31,6 +42,7 @@ namespace QuantumServerClient
         public Action<string, SocketIOResponse> OnAnyMessage;
         public Action<string, SocketIOResponse> OnGenericMessage;
         private PingQueue _pingQueue;
+        private uint _currentEventId;
         Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
         public Action<string> Log;
@@ -40,19 +52,7 @@ namespace QuantumServerClient
             //var uri = new Uri($"{config.Url}:{config.Port}/gateway");
             _config = config;
             _client = new SocketIOClient.SocketIO(_config.Url);
-            //_client.Serializer = new NewtonsoftJsonSerializer(new JsonSerializerSettings()
-            //{
-            //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            //});
-            //_client = new SocketIOClient.SocketIO(_config.Url, new SocketIOOptions()
-            //{
-            //    //RemoteCertificateValidationCallback = (sender, certificate, chain, errors) =>
-            //    //{
-            //    //    Log?.Invoke($"sender: {sender}\n certificate: {certificate}\n chain: {chain}\n errors: {errors}");
-            //    //    return true;
-            //    //},
-            //    //Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
-            //});
+            _client.JsonSerializer = new NewtonsoftJsonSerializer(_config.SerializationSettings);
             _client.On("generic-message", OnGenericMessageCallback);
             _client.OnAny(OnAnyMessageCallback);
             _client.OnConnected += (sender, args) =>
@@ -60,9 +60,10 @@ namespace QuantumServerClient
                 OnConnected?.Invoke();
             };
             _pingQueue = new PingQueue(100);
+            _currentEventId = 0;
         }
 
-        private async Task OnGenericMessageCallback(SocketIOResponse response)
+        private async void OnGenericMessageCallback(SocketIOResponse response)
         {
             await Task.Delay(Math.Max(_config.MessageDelay - Ping, 0));
             OnGenericMessage?.Invoke("generic-message", response);
@@ -88,9 +89,20 @@ namespace QuantumServerClient
             }
         }
 
-        public async Task SendMessage(GenericMessageEvent message)
+        public async Task SendMessage(GenericMessage message)
         {
-            await _client.EmitAsync("generic-message", message);
+            var qEvent = new QuantumEvent
+            {
+                type = "generic-message",
+                id = _currentEventId++,
+                message = message
+            };
+            await SendEvent(qEvent);
+        }
+
+        private async Task SendEvent(QuantumEvent qEvent)
+        {
+            await _client.EmitAsync(qEvent.type, qEvent);
         }
         
         private async Task CheckPing()
