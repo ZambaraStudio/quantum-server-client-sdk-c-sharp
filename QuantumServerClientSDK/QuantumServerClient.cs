@@ -89,6 +89,11 @@ namespace QuantumServerClient
             }
         }
 
+        public void Disconnect()
+        {
+            _client.DisconnectAsync();
+        }
+
         public async Task SendMessage(GenericMessage message)
         {
             var qEvent = new QuantumEvent
