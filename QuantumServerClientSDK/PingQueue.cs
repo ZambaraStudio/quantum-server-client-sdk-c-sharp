@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace QuantumServerClient
+namespace Quantum
 {
     public class PingQueue
     {
