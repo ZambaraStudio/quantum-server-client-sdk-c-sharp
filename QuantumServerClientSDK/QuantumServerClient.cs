@@ -28,7 +28,7 @@ namespace Quantum
         public string type { get; set; }
         public object data { get; set; }
         
-        public T GetValue<T>()
+        public T GetData<T>()
         {
             return JsonConvert.DeserializeObject<T>(data.ToString());
         }
